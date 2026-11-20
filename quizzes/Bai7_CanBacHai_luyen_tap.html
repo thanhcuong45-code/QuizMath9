@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bai7_CanBacHai - Luyện tập</title>
+    <style>
+        * { box-sizing: border-box; }
+        [hidden] { display: none !important; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f7fbff; color: #1c2b3a; line-height: 1.6; }
+ 
+        .topbar { position: sticky; top: 0; z-index: 50; background: #1e88e5; color: #fff; padding: 8px 14px 6px; box-shadow: 0 2px 6px rgba(30,136,229,.25); }
+        .topbar .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; max-width: 820px; margin: auto; }
+        .topbar h1 { margin: 0; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+        .stats { font-size: 13px; opacity: .95; }
+        .bar { max-width: 820px; margin: 6px auto 0; height: 6px; background: rgba(255,255,255,.35); border-radius: 3px; overflow: hidden; }
+        .bar > i { display: block; height: 100%; width: 0; background: #fff; transition: width .3s; }
+        .tbtn { background: #fff; color: #1565c0; border: none; border-radius: 4px; padding: 5px 12px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .tbtn:hover { background: #e3f0fb; }
+ 
+        main { max-width: 820px; margin: auto; padding: 14px; }
+        details.settings { background: #fff; border: 1px solid #b3d4fc; border-radius: 6px; padding: 8px 12px; margin-bottom: 14px; }
+        details.settings summary { cursor: pointer; font-weight: bold; color: #1565c0; }
+        .setrow { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 10px 0 6px; font-size: 14px; }
+        .setrow label { cursor: pointer; }
+        .setbtns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .sbtn { background: #1e88e5; color: #fff; border: none; border-radius: 4px; padding: 7px 14px; cursor: pointer; font-weight: bold; }
+        .sbtn:hover { background: #1565c0; }
+        .sbtn.warn { background: #ef6c00; }
+        .sbtn.warn:hover { background: #e65100; }
+        #note { font-size: 12px; color: #8a5a00; margin-top: 6px; min-height: 1em; }
+ 
+        h3.parttitle { color: #1565c0; border-bottom: 2px solid #b3d4fc; padding-bottom: 5px; margin: 26px 0 12px; text-transform: uppercase; font-size: 17px; }
+ 
+        .question { background: #eef6fc; border: 2px solid #b3d4fc; border-radius: 6px; padding: 14px; margin-bottom: 16px; overflow-x: auto; }
+        .question:not(.shown) { display: none; }
+        .question.s-correct { border-color: #28a745; }
+        .question.s-wrong { border-color: #dc3545; }
+        .question.s-partial { border-color: #ff9800; }
+        .hide-done .question.done-hide { display: none; }
+        .qtext { margin-bottom: 12px; word-wrap: break-word; }
+        mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+ 
+        #moreWrap { text-align: center; margin: 6px 0 26px; }
+        #moreBtn { background: #fff; color: #1565c0; border: 2px dashed #1e88e5; border-radius: 6px; padding: 10px 22px; font-weight: bold; cursor: pointer; }
+        #moreBtn:hover { background: #e3f0fb; }
+ 
+        .opt { display: flex; gap: 8px; align-items: flex-start; background: #fff; border: 1px solid #b3d4fc; border-radius: 4px; padding: 9px 11px; margin: 7px 0; cursor: pointer; transition: .2s; }
+        .opt:hover:not(.locked) { background: #e3f0fb; border-color: #1e88e5; }
+        .opt:focus-visible, .tfb button:focus-visible { outline: 3px solid #ff9800; outline-offset: 1px; }
+        .opt.locked { cursor: default; }
+        .opt.locked:not(.correct):not(.wrong) { opacity: .55; }
+        .opt.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+        .opt.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .lab { font-weight: bold; min-width: 1.7em; }
+        .ob { flex: 1; min-width: 0; overflow-x: auto; }
+ 
+        .tfrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; background: #fff; border: 1px solid #b3d4fc; border-radius: 4px; padding: 8px 10px; margin: 7px 0; }
+        .tfrow.r-ok { border-color: #28a745; }
+        .tfrow.r-bad { border-color: #dc3545; }
+        .tfc { flex: 1 1 60%; min-width: 0; overflow-x: auto; }
+        .tfb { display: flex; gap: 8px; }
+        .tfb button { padding: 6px 16px; font-weight: bold; border: 2px solid #b3d4fc; background: #fff; border-radius: 5px; cursor: pointer; }
+        .tfb button:hover:not(:disabled) { background: #e3f0fb; }
+        .tfb button:disabled { cursor: default; }
+        .tfb button.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+        .tfb button.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+ 
+        .shortrow { display: flex; gap: 8px; flex-wrap: wrap; }
+        .sans { width: 190px; max-width: 100%; padding: 9px 12px; font-size: 18px; font-weight: bold; border: 2px solid #1e88e5; border-radius: 5px; color: #1565c0; }
+        .sans.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+        .sans.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .chk { background: #ffc107; border: none; border-radius: 5px; padding: 0 18px; font-weight: bold; cursor: pointer; min-height: 42px; }
+        .chk:disabled { background: #ccc; cursor: default; }
+        .true-ans { margin-top: 10px; color: #28a745; font-weight: bold; }
+ 
+        .fb { margin-top: 8px; font-weight: bold; min-height: 1.2em; }
+        .f-correct { color: #28a745; } .f-wrong { color: #dc3545; } .f-partial { color: #ef6c00; }
+        .qtools { margin-top: 6px; }
+        .sol-btn { background: #17a2b8; color: #fff; border: none; border-radius: 4px; padding: 6px 14px; cursor: pointer; font-weight: bold; }
+        .sol-btn:hover { background: #138496; }
+        .solution-box { display: none; margin-top: 12px; padding: 14px; background: #e8f4fc; border-left: 5px solid #0288d1; border-radius: 4px; overflow-x: auto; }
+ 
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; display: none; align-items: center; justify-content: center; padding: 14px; }
+        .modal.open { display: flex; }
+        .mbox { background: #fff; border-radius: 10px; width: 100%; max-width: 440px; padding: 22px 22px 18px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.35); max-height: 92vh; overflow-y: auto; }
+        .mbox h2 { margin: 0 0 4px; color: #1565c0; }
+        .bigscore { font-size: 40px; font-weight: bold; color: #e53935; line-height: 1.2; }
+        .pct { font-size: 18px; color: #555; margin-bottom: 6px; }
+        #sumMsg { margin: 4px 0 10px; color: #333; }
+        .plist { list-style: none; padding: 0; margin: 10px 0 14px; text-align: left; }
+        .plist li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed #cfe0f1; padding: 6px 0; font-size: 14px; }
+        .mbtns { display: flex; flex-direction: column; gap: 8px; }
+ 
+        /* --- SVG / ẢNH + KHUNG ZOOM DÙNG CHUNG (khung tự co giãn, không đặt chiều cao cố định) --- */
+        :root {
+            --zoom-accent: #1e88e5; --zoom-accent-hover: #1565c0;
+            --zoom-border: #b3d4fc; --zoom-bar-bg: #eef6fc; --zoom-max-h: none;
+        }
+        svg { max-width: 100%; height: auto; display: block; margin: 10px auto; overflow: visible; }
+        svg text { font-family: Arial, sans-serif; }
+        img { max-width: 100%; height: auto; }
+        .zoom-container { display: flex; align-items: flex-start; gap: 10px; margin: 15px 0; }
+        .zoom-viewport {
+            flex: 1 1 auto; min-width: 0;
+            overflow: auto; -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--zoom-border); border-radius: 4px; background: #fff;
+            box-sizing: border-box; padding: 4px;
+        }
+        /* chỉ giới hạn chiều cao và giữ cuộn bên trong khi ảnh đang được phóng to */
+        .zoom-viewport.can-pan { cursor: grab; max-height: var(--zoom-max-h); overscroll-behavior: contain; }
+        .zoom-viewport.dragging { cursor: grabbing; user-select: none; }
+        .zoom-toolbar { display: flex; flex-direction: column; gap: 5px; background: var(--zoom-bar-bg); padding: 5px; border-radius: 4px; border: 1px solid var(--zoom-border); flex-shrink: 0; }
+        .zoom-btn { background: var(--zoom-accent); color: #fff; border: none; padding: 6px 10px; font-size: 14px; border-radius: 4px; cursor: pointer; transition: background .2s, opacity .2s; white-space: nowrap; }
+        .zoom-btn:hover:not(:disabled) { background: var(--zoom-accent-hover); }
+        .zoom-btn:disabled { background: #ccc; cursor: not-allowed; opacity: .6; }
+        .zoom-media { display: block; margin: 0 auto; max-width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+        .zoom-media.zoomed { width: var(--zw) !important; max-width: none !important; height: auto !important; }
+        /* --- BẢNG DÀI: bọc trong khung cuộn ngang, không làm tràn lề --- */
+        .table-scroll { display: block; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 10px 0; }
+        .table-scroll > table { margin: 0; max-width: 100%; border-collapse: collapse; }
+        .table-scroll th, .table-scroll td { overflow-wrap: break-word; }
+        /* .table-responsive do TeX2HTML tạo ra: trước đây chỉ mẫu làm bài có CSS này nên bảng rộng bị tràn ở trình chiếu / luyện tập */
+        .table-responsive { display: block; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 15px 0; }
+        /* --- BẢNG RỘNG TRÊN ĐIỆN THOẠI: gợi ý vuốt ngang, cột đầu cố định, xem toàn màn hình --- */
+        .tbl-box { position: relative; margin: 12px 0; max-width: 100%; min-width: 0; }
+        .tbl-box > .tbl-wrap { position: relative; }
+        .tbl-box .table-responsive, .tbl-box .table-scroll { margin: 0; }
+        .tbl-hint { display: none; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 4px; font-size: 12.5px; color: #5f7b94; }
+        .tbl-box.has-scroll > .tbl-hint { display: flex; }
+        .tbl-open { font: inherit; font-size: 12.5px; padding: 4px 10px; border-radius: 14px; border: 1px solid var(--zoom-border); background: var(--zoom-bar-bg); color: var(--zoom-accent-hover); cursor: pointer; white-space: nowrap; }
+        .tbl-fade { display: none; position: absolute; top: 0; right: 0; bottom: 0; width: 30px; pointer-events: none; background: linear-gradient(to right, rgba(255,255,255,0), rgba(120,140,160,.28)); }
+        .tbl-box.has-scroll:not(.at-end) .tbl-fade { display: block; }
+        .tbl-box.has-scroll table.sticky-first tr > :first-child { position: sticky; left: 0; z-index: 2; background: #fff; box-shadow: 2px 0 4px -2px rgba(0,0,0,.35); }
+        @media (max-width: 600px) {
+            .tbl-box td, .tbl-box th { font-size: 14px; padding: 4px 7px !important; }
+        }
+        #tblOverlay { position: fixed; inset: 0; z-index: 99999; background: #fff; display: none; flex-direction: column; }
+        #tblOverlay.open { display: flex; }
+        .tbl-ov-bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--zoom-bar-bg); border-bottom: 1px solid var(--zoom-border); }
+        .tbl-ov-bar .ttl { flex: 1; min-width: 0; font-size: 13px; font-weight: bold; color: #333; }
+        .tbl-ov-body { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; padding: 10px; touch-action: pan-x pan-y; }
+        .tbl-ov-body table { margin: 0; width: auto; max-width: none; border-collapse: collapse; font-size: calc(15px * var(--tbl-s, 1)); }
+        .tbl-ov-body td, .tbl-ov-body th { font-size: inherit !important; padding: 5px 9px; }
+
+        
+        /* ===== Bổ sung của bộ chuyển đổi TeX2HTML (PyQt6) ===== */
+        .tp { margin: 6px 0; }
+        .center { text-align: center; }
+        /* Huy hiệu mức độ khó (suy ra từ ID câu hỏi, HTML bài giảng) */
+        .lvl { display: inline-block; margin-left: 8px; padding: 1px 10px; border-radius: 12px; border: 1px solid; font-size: 12px; font-weight: bold; line-height: 1.6; white-space: nowrap; vertical-align: middle; cursor: help; }
+        .lvl .dots { letter-spacing: 1px; margin-right: 4px; }
+        .lvl.lv1 { background: #e6f4ea; border-color: #34a853; color: #1b6b32; }
+        .lvl.lv2 { background: #e3f0fb; border-color: #4a90d9; color: #0d47a1; }
+        .lvl.lv3 { background: #fff3e0; border-color: #fb8c00; color: #8a4b00; }
+        .lvl.lv4 { background: #fdeaea; border-color: #e53935; color: #a31515; }
+        .figure svg, .figure img { max-width: 100%; height: auto; }
+        .fig-error { color: #b00020; border: 1px dashed #b00020; padding: 6px 10px; text-align: center; margin: 8px 0; font-size: 14px; }
+        .fbox { border: 1px solid currentColor; padding: 0 4px; }
+        blockquote { margin: 8px 20px; }
+        img { max-width: 100%; height: auto; }
+        ul, ol { margin: 6px 0; padding-left: 24px; }
+        ul.desc, li.cl { list-style: none; }
+        li.cl .lbl { font-weight: bold; margin-right: .4em; }
+        ol[class^="paren-"] { list-style: none; counter-reset: pc; padding-left: 2.2em; }
+        ol[class^="paren-"] > li { counter-increment: pc; position: relative; margin: 4px 0; }
+        ol[class^="paren-"] > li::before { position: absolute; left: -2.2em; width: 2em; text-align: right; font-weight: bold; }
+        ol.paren-a > li::before { content: counter(pc, lower-alpha) ")"; }
+        ol.paren-A > li::before { content: counter(pc, upper-alpha) ")"; }
+        ol.paren-i > li::before { content: counter(pc, lower-roman) ")"; }
+        ol.paren-I > li::before { content: counter(pc, upper-roman) ")"; }
+        ol.paren-1 > li::before { content: counter(pc, decimal) ")"; }
+        table.tex-table { border-collapse: collapse; margin: 8px auto; }
+        table.tex-table td { padding: 4px 10px; }
+        table.tex-table.bordered td { border: 1px solid #555; }
+        .tex-fa { margin: 0 .25em; font-style: normal; }
+
+
+ 
+        /* ---- THANH ĐIỀU HƯỚNG CỐ ĐỊNH Ở CUỐI TRANG (kèm footer) ---- */
+        body { padding-bottom: 64px; }
+        .question { scroll-margin-top: 84px; }
+        .question.flash { animation: flash 1.6s ease; }
+        @keyframes flash { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,152,0,0); } 30% { box-shadow: 0 0 0 6px rgba(255,152,0,.7); } }
+        .navbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: #fff; border-top: 2px solid #b3d4fc; box-shadow: 0 -2px 8px rgba(0,0,0,.08); padding: 6px 12px; }
+        .navin { max-width: 820px; margin: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .nbtn { background: #1e88e5; color: #fff; border: none; border-radius: 4px; padding: 6px 12px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap; }
+        .nbtn:hover { background: #1565c0; }
+        .jump { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #1565c0; font-weight: bold; white-space: nowrap; }
+        .jump input { width: 62px; padding: 5px 6px; border: 2px solid #1e88e5; border-radius: 4px; font-size: 14px; text-align: center; }
+        .nav-credit { margin-left: auto; font-size: 12px; color: #5f7b94; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40%; }
+        .nav-credit:empty { display: none; }
+        #tocModal .mbox { max-width: 540px; }
+        .tocleg { display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: center; margin: 8px 0 10px; font-size: 12px; }
+        .tocleg span { padding: 1px 9px; border: 2px solid; border-radius: 12px; }
+        .tocgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 7px; margin-bottom: 14px; }
+        .tocitem { min-height: 40px; border: 2px solid; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; }
+        .tocitem:hover { filter: brightness(.94); }
+        .t-none { background: #e2eefb; border-color: #1e88e5; color: #0d47a1; }
+        .t-correct { background: #d4edda; border-color: #28a745; color: #155724; }
+        .t-wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .t-partial { background: #fff3cd; border-color: #ff9800; color: #7a4b00; }
+        @media (max-width: 600px) {
+            main { padding: 10px; } .question { padding: 10px; } .tfc { flex-basis: 100%; }
+            body { padding-bottom: 92px; }
+            .navin { justify-content: center; }
+            .nav-credit { flex-basis: 100%; max-width: 100%; margin-left: 0; text-align: center; font-size: 11px; }
+        }
+    </style>
+ 
+    <script>
+        window.MathJax = {
+          tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']], processEscapes: true, macros: {"wideparen": ["\\overset{\\frown}{#1}", 1], "overarc": ["\\overset{\\frown}{#1}", 1]} },
+          startup: { typeset: false },
+          options: { enableMenu: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+</head>
+<body>
+    <div class="topbar">
+        <div class="row">
+            <h1>Bai7_CanBacHai</h1>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <span class="stats" id="stStats"></span>
+                <button type="button" class="tbtn" id="btnResult">Kết quả</button>
+            </div>
+        </div>
+        <div class="bar"><i id="barFill"></i></div>
+    </div>
+ 
+    <main>
+        <details class="settings">
+            <summary>⚙ Tuỳ chọn luyện tập</summary>
+            <div class="setrow">
+                <label><input type="checkbox" id="optSQ"> Trộn thứ tự câu hỏi</label>
+                <label><input type="checkbox" id="optSC"> Trộn thứ tự phương án (phần 1)</label>
+                <label><input type="checkbox" id="optHide"> Ẩn các câu đã làm đúng</label>
+            </div>
+            <div class="setbtns">
+                <button type="button" class="sbtn" id="btnRetry">Làm lại câu chưa đúng</button>
+                <button type="button" class="sbtn warn" id="btnRestart">Làm lại từ đầu</button>
+            </div>
+            <div id="note"></div>
+        </details>
+ 
+        <section class="part" data-part="1" data-off="0" data-cont="0"><h3 class="parttitle">PHẦN 1. Câu trắc nghiệm nhiều phương án lựa chọn</h3><div class="qlist"><div class="question" id="q_P1_1" data-id="P1_1" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">1</span>:</b> Giá trị của biểu thức $\sqrt{(-5)^2}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$-5$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$5$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$\pm 5$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$25$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\sqrt{(-5)^2} = |-5| = 5$.</li></ul> <b>Vậy</b> $\sqrt{(-5)^2} = 5$.</div></div></div>
+<div class="question" id="q_P1_2" data-id="P1_2" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">2</span>:</b> Căn bậc hai số học của $49$ là</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$-7$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$7$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$\pm 7$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$24{,}5$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Vì $\sqrt{49}=\sqrt{7^2} = 7$.</li></ul> <b>Vậy</b> Căn bậc hai số học của $49$ là $7$.</div></div></div>
+<div class="question" id="q_P1_3" data-id="P1_3" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">3</span>:</b> Biểu thức $\sqrt{5-x}$ xác định khi và chỉ khi</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$x \ge 5$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$x &lt; 5$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$x \ge -5$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$x \le 5$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Biểu thức $\sqrt{5-x}$ xác định khi và chỉ khi $5 - x \ge 0 \Leftrightarrow x \le 5$.</li></ul> <b>Vậy</b> Biểu thức xác định khi $x \le 5$.</div></div></div>
+<div class="question" id="q_P1_4" data-id="P1_4" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">4</span>:</b> Điều kiện xác định của biểu thức $\sqrt{2x-6}$ là</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$x \ge 3$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$x &gt; 3$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$x \le 3$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$x \ge -3$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Biểu thức $\sqrt{2x-6}$ xác định khi và chỉ khi $2x - 6 \ge 0 \Leftrightarrow 2x \ge 6 \Leftrightarrow x \ge 3$.</li></ul> <b>Vậy</b> Điều kiện xác định là $x \ge 3$.</div></div></div>
+<div class="question" id="q_P1_5" data-id="P1_5" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">5</span>:</b> Giá trị của biểu thức $\sqrt{12}\cdot\sqrt{3}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$36$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$9$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$6$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$\sqrt{15}$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\sqrt{12}\cdot\sqrt{3} = \sqrt{12 \cdot 3} = \sqrt{36} = 6$.</li></ul> <b>Vậy</b> $\sqrt{12}\cdot\sqrt{3} = 6$.</div></div></div>
+<div class="question" id="q_P1_6" data-id="P1_6" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">6</span>:</b> Giá trị của biểu thức $\dfrac{\sqrt{18}}{\sqrt{2}}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$9$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$6$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$16$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$3$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\dfrac{\sqrt{18}}{\sqrt{2}} = \sqrt{\dfrac{18}{2}} = \sqrt{9} = 3$.</li></ul> <b>Vậy</b> $\dfrac{\sqrt{18}}{\sqrt{2}} = 3$.</div></div></div>
+<div class="question" id="q_P1_7" data-id="P1_7" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">7</span>:</b> Giá trị của biểu thức $\sqrt{2}\cdot\sqrt{8}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$4$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$16$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$\sqrt{10}$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$2$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\sqrt{2}\cdot\sqrt{8} = \sqrt{2 \cdot 8} = \sqrt{16} = 4$.</li></ul> <b>Vậy</b> $\sqrt{2}\cdot\sqrt{8} = 4$.</div></div></div>
+<div class="question" id="q_P1_8" data-id="P1_8" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">8</span>:</b> Giá trị của biểu thức $\sqrt{\dfrac{49}{16}}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$\dfrac{7}{16}$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$\dfrac{49}{4}$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$\dfrac{7}{4}$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$\dfrac{4}{7}$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\sqrt{\dfrac{49}{16}} = \dfrac{\sqrt{49}}{\sqrt{16}} = \dfrac{7}{4}$.</li></ul> <b>Vậy</b> $\sqrt{\dfrac{49}{16}} = \dfrac{7}{4}$.</div></div></div>
+<div class="question" id="q_P1_9" data-id="P1_9" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">9</span>:</b> Rút gọn biểu thức $\sqrt{(3-\sqrt{10})^2}$ ta được</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$3-\sqrt{10}$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$3+\sqrt{10}$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$\sqrt{10}+3$ hoặc $3-\sqrt{10}$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$\sqrt{10}-3$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Vì $3^2 = 9 &lt; 10$ nên $3 &lt; \sqrt{10}$, suy ra $3 - \sqrt{10} &lt; 0$.</li><li>Do đó $\sqrt{(3-\sqrt{10})^2} = |3-\sqrt{10}| = -(3-\sqrt{10}) = \sqrt{10}-3$.</li></ul> <b>Vậy</b> $\sqrt{(3-\sqrt{10})^2} = \sqrt{10}-3$.</div></div></div>
+<div class="question" id="q_P1_10" data-id="P1_10" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">10</span>:</b> Giá trị của biểu thức $\sqrt{\dfrac{1{,}44}{0{,}49}}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$\dfrac{7}{12}$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$\dfrac{6}{7}$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$\dfrac{144}{49}$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$\dfrac{12}{7}$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\sqrt{\dfrac{1{,}44}{0{,}49}} = \dfrac{\sqrt{1{,}44}}{\sqrt{0{,}49}} = \dfrac{1{,}2}{0{,}7} = \dfrac{12}{7}$.</li></ul> <b>Vậy</b> $\sqrt{\dfrac{1{,}44}{0{,}49}} = \dfrac{12}{7}$.</div></div></div>
+<div class="question" id="q_P1_11" data-id="P1_11" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">11</span>:</b> Với $a &gt; 0$, biểu thức $\dfrac{\sqrt{32a^3}}{\sqrt{2a}}$ được rút gọn thành</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$16a$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$4a^2$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$4a$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$8a$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Với $a &gt; 0$, ta có $\dfrac{\sqrt{32a^3}}{\sqrt{2a}} = \sqrt{\dfrac{32a^3}{2a}} = \sqrt{16a^2} = 4|a|$.</li><li>Vì $a &gt; 0$ nên $|a| = a$, do đó biểu thức bằng $4a$.</li></ul> <b>Vậy</b> $\dfrac{\sqrt{32a^3}}{\sqrt{2a}} = 4a$ với $a &gt; 0$.</div></div></div>
+<div class="question" id="q_P1_12" data-id="P1_12" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">12</span>:</b> Với $a \ge 0$, biểu thức $\sqrt{3a}\cdot\sqrt{27a}$ được rút gọn thành</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$81a$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$9a^2$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$9|a|$ với mọi $a$ và bằng $-9a$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$9a$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Với $a \ge 0$, ta có $\sqrt{3a}\cdot\sqrt{27a} = \sqrt{3a \cdot 27a} = \sqrt{81a^2} = 9|a|$.</li><li>Vì $a \ge 0$ nên $|a| = a$, do đó biểu thức bằng $9a$.</li></ul> <b>Vậy</b> $\sqrt{3a}\cdot\sqrt{27a} = 9a$ với $a \ge 0$.</div></div></div>
+<div class="question" id="q_P1_13" data-id="P1_13" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">13</span>:</b> Giá trị của biểu thức $\sqrt{45}\cdot\sqrt{20}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$15$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$60$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$30$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$900$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\sqrt{45}\cdot\sqrt{20} = \sqrt{45 \cdot 20} = \sqrt{900} = 30$.</li></ul> <b>Vậy</b> $\sqrt{45}\cdot\sqrt{20} = 30$.</div></div></div>
+<div class="question" id="q_P1_14" data-id="P1_14" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">14</span>:</b> Giá trị của biểu thức $\sqrt{0{,}36 \cdot 49}$ bằng</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$42$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$0{,}42$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$4{,}2$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$2{,}1$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Ta có $\sqrt{0{,}36 \cdot 49} = \sqrt{0{,}36}\cdot\sqrt{49} = 0{,}6 \cdot 7 = 4{,}2$.</li></ul> <b>Vậy</b> $\sqrt{0{,}36 \cdot 49} = 4{,}2$.</div></div></div>
+<div class="question" id="q_P1_15" data-id="P1_15" data-kind="mc" data-part="1"><div class="qtext"><div class="tp"><b>Câu <span class="qno">15</span>:</b> Với $x &gt; 2$, biểu thức $\dfrac{\sqrt{x^2-4}}{\sqrt{x-2}}$ được rút gọn thành</div></div><div class="opts"><div class="opt" tabindex="0" role="button" data-k="A"><span class="lab"></span><div class="ob">$\sqrt{x-2}$</div></div><div class="opt" tabindex="0" role="button" data-k="B"><span class="lab"></span><div class="ob">$x+2$</div></div><div class="opt" tabindex="0" role="button" data-k="C"><span class="lab"></span><div class="ob">$x-2$</div></div><div class="opt" tabindex="0" role="button" data-k="D"><span class="lab"></span><div class="ob">$\sqrt{x+2}$</div></div></div><div class="fb"></div><div class="qtools"><button type="button" class="sol-btn" hidden>Xem lời giải</button></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ul><li>Với $x &gt; 2$ thì $x^2 - 4 &gt; 0$ và $x - 2 &gt; 0$, nên: \[
+			\dfrac{\sqrt{x^2-4}}{\sqrt{x-2}} = \sqrt{\dfrac{x^2-4}{x-2}} = \sqrt{\dfrac{(x-2)(x+2)}{x-2}} = \sqrt{x+2}.
+			\]</li></ul> <b>Vậy</b> $\dfrac{\sqrt{x^2-4}}{\sqrt{x-2}} = \sqrt{x+2}$ với $x &gt; 2$.</div></div></div></div></section>
+        <div id="moreWrap" hidden><button type="button" id="moreBtn"></button></div>
+ 
+    </main>
+ 
+    <!-- THANH ĐIỀU HƯỚNG Ở CUỐI TRANG: lên đầu, nhảy đến câu, mục lục, footer -->
+    <nav class="navbar" aria-label="Điều hướng">
+        <div class="navin">
+            <button type="button" class="nbtn" id="navTop" title="Lên đầu trang">⬆ Đầu trang</button>
+            <div class="jump">
+                <label for="navNum">Câu</label>
+                <input type="number" id="navNum" min="1" inputmode="numeric" placeholder="số">
+                <span id="navTotal"></span>
+                <button type="button" class="nbtn" id="navGo">Đi</button>
+            </div>
+            <button type="button" class="nbtn" id="navToc" title="Mục lục câu hỏi">☰ Mục lục</button>
+            <span class="nav-credit">Liên hệ Bùi Thanh Cương - 0915782183</span>
+        </div>
+    </nav>
+ 
+    <div class="modal" id="tocModal" role="dialog" aria-modal="true">
+        <div class="mbox">
+            <h2>Mục lục câu hỏi</h2>
+            <div class="tocleg">
+                <span class="t-correct">Đúng</span><span class="t-wrong">Sai</span><span class="t-partial">Một phần</span><span class="t-none">Chưa làm</span>
+            </div>
+            <div class="tocgrid" id="tocGrid"></div>
+            <div class="mbtns"><button type="button" class="sbtn" id="tocClose" style="background:#6c757d;">Đóng</button></div>
+        </div>
+    </div>
+ 
+    <div class="modal" id="summary" role="dialog" aria-modal="true">
+        <div class="mbox">
+            <h2>Kết quả luyện tập</h2>
+            <div id="sumBody"></div>
+            <div id="sumMsg"></div>
+            <div class="mbtns">
+                <button type="button" class="sbtn" id="sumRetry">Làm lại câu chưa đúng</button>
+                <button type="button" class="sbtn warn" id="sumRestart">Làm lại từ đầu</button>
+                <button type="button" class="sbtn" id="sumClose" style="background:#6c757d;">Đóng</button>
+            </div>
+        </div>
+    </div>
+ 
+    <script>
+        const MEDIA_SCOPE = '.question.shown';
+        // =====================================================================
+        // XỬ LÝ SVG / ẢNH (dùng chung cho quiz và trình chiếu)
+        // Mỗi template khai báo trước: const MEDIA_SCOPE = '.vung-chua-hinh, ...';
+        // =====================================================================
+        const MEDIA_SVG_SEL = MEDIA_SCOPE.split(',').map(s => s.trim() + ' svg').join(', ');
+        const MEDIA_ALL_SEL = MEDIA_SCOPE.split(',').map(s => s.trim()).flatMap(s => [s + ' svg', s + ' img']).join(', ');
+
+        // Chỉ nhận số thuần hoặc "px"; "10cm", "50%", "auto"... trả về NaN để không đọc sai đơn vị
+        function svgNum(v) {
+            if (v == null) return NaN;
+            const m = String(v).trim().match(/^([0-9]*\.?[0-9]+)(px)?$/i);
+            return m ? parseFloat(m[1]) : NaN;
+        }
+
+        // Đổi id trong từng SVG thành duy nhất để các hình không dùng nhầm clipPath/marker/gradient của nhau
+        let __svgSeq = 0;
+        function uniquifySvgIds(svg) {
+            if (svg.dataset.idsDone) return;
+            svg.dataset.idsDone = '1';
+            const withId = svg.querySelectorAll('[id]');
+            if (!withId.length) return;
+            const prefix = 'svg' + (++__svgSeq) + '_';
+            const map = {};
+            withId.forEach(n => { map[n.id] = prefix + n.id; });
+            const ids = Object.keys(map);
+            const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const urlRe = /url\(\s*(['"]?)#([^)'"\s]+)\1\s*\)/g;
+            const fixUrls = str => str.replace(urlRe, (m, q, id) => map[id] ? `url(${q}#${map[id]}${q})` : m);
+
+            svg.querySelectorAll('*').forEach(n => {
+                if (n.tagName.toLowerCase() === 'style') {
+                    let css = fixUrls(n.textContent);
+                    css = css.replace(new RegExp('#(' + ids.map(esc).join('|') + ')(?![\\w-])', 'g'), '#' + prefix + '$1');
+                    n.textContent = css;
+                    return;
+                }
+                Array.from(n.attributes).forEach(a => {
+                    if (a.name === 'id' || a.value.indexOf('#') < 0) return;
+                    if ((a.name === 'href' || a.name === 'xlink:href') && a.value.charAt(0) === '#') {
+                        const id = a.value.slice(1);
+                        if (map[id]) n.setAttribute(a.name, '#' + map[id]);
+                    } else {
+                        const nv = fixUrls(a.value);
+                        if (nv !== a.value) n.setAttribute(a.name, nv);
+                    }
+                });
+            });
+            withId.forEach(n => { n.id = map[n.id]; });
+        }
+
+        // Chuẩn hóa SVG: id duy nhất + thêm viewBox nếu thiếu để SVG co giãn đúng
+        function normalizeSvgs() {
+            document.querySelectorAll(MEDIA_SVG_SEL).forEach(svg => {
+                if (svg.closest('mjx-container')) return;
+                uniquifySvgIds(svg);
+                if (svg.dataset.normalized) return;
+                const w = svgNum(svg.getAttribute('width'));
+                const h = svgNum(svg.getAttribute('height'));
+
+                if (!svg.hasAttribute('viewBox')) {
+                    if (w > 0 && h > 0) {
+                        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+                    } else {
+                        try {   // đang bị ẩn thì getBBox lỗi -> sẽ thử lại khi phần chứa nó hiện ra
+                            const b = svg.getBBox();
+                            if (b.width && b.height)
+                                svg.setAttribute('viewBox', `${b.x - 2} ${b.y - 2} ${b.width + 4} ${b.height + 4}`);
+                        } catch (e) { return; }
+                    }
+                }
+                if (svg.hasAttribute('viewBox')) {
+                    if (w > 0) { svg.style.width = '100%'; svg.style.maxWidth = w + 'px'; }  // kích thước gốc làm trần
+                    svg.removeAttribute('height');
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                    svg.dataset.normalized = '1';
+                }
+            });
+        }
+
+        // Zoom: phóng to bằng cách tăng chiều rộng thật, khung tự cao theo, cuộn bằng thanh cuộn gốc
+        const __zoomRefresh = new Set();
+        let __zoomResizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(__zoomResizeTimer);
+            __zoomResizeTimer = setTimeout(() => __zoomRefresh.forEach(fn => fn()), 150);
+        });
+
+        function setupImageZoom() {
+            document.querySelectorAll(MEDIA_ALL_SEL).forEach(el => {
+                if (el.closest('.zoom-container') || el.closest('mjx-container') || el.classList.contains('no-zoom')) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'zoom-container';
+                const viewport = document.createElement('div');
+                viewport.className = 'zoom-viewport';
+                el.parentNode.insertBefore(wrapper, el);
+                viewport.appendChild(el);
+                wrapper.appendChild(viewport);
+                el.classList.add('zoom-media');
+
+                let scale = 1;
+                const STEP = 0.25, MIN = 1, MAX = 4;
+
+                const toolbar = document.createElement('div');
+                toolbar.className = 'zoom-toolbar';
+                const mk = (txt, title) => {
+                    const b = document.createElement('button');
+                    b.type = 'button'; b.className = 'zoom-btn'; b.innerHTML = txt; b.title = title;
+                    b.setAttribute('aria-label', title);
+                    return b;
+                };
+                const btnIn = mk('➕', 'Phóng to'), btnOut = mk('➖', 'Thu nhỏ'), btnReset = mk('↺', 'Mặc định');
+
+                function apply(newScale) {
+                    const cx = viewport.scrollWidth ? (viewport.scrollLeft + viewport.clientWidth / 2) / viewport.scrollWidth : 0.5;
+                    const cy = viewport.scrollHeight ? (viewport.scrollTop + viewport.clientHeight / 2) / viewport.scrollHeight : 0.5;
+
+                    scale = Math.min(MAX, Math.max(MIN, Math.round(newScale * 100) / 100));
+
+                    el.classList.remove('zoomed');
+                    el.style.removeProperty('--zw');
+                    const base = el.getBoundingClientRect().width;   // chiều rộng vừa khung hiện tại
+                    if (scale > 1 && base > 0) {
+                        el.style.setProperty('--zw', (base * scale) + 'px');
+                        el.classList.add('zoomed');
+                        viewport.scrollLeft = cx * viewport.scrollWidth - viewport.clientWidth / 2;
+                        viewport.scrollTop = cy * viewport.scrollHeight - viewport.clientHeight / 2;
+                    }
+                    viewport.classList.toggle('can-pan', el.classList.contains('zoomed'));
+                    btnIn.disabled = scale >= MAX;
+                    btnOut.disabled = scale <= MIN;
+                }
+
+                btnIn.onclick = () => apply(scale + STEP);
+                btnOut.onclick = () => apply(scale - STEP);
+                btnReset.onclick = () => apply(1);
+                __zoomRefresh.add(() => { if (scale > 1) apply(scale); });
+
+                // Ctrl + lăn chuột để zoom, nhấp đúp để phóng to/reset
+                viewport.addEventListener('wheel', e => {
+                    if (!e.ctrlKey) return;
+                    e.preventDefault();
+                    apply(scale + (e.deltaY < 0 ? STEP : -STEP));
+                }, { passive: false });
+                viewport.addEventListener('dblclick', () => apply(scale > 1 ? 1 : 2));
+
+                // Kéo thả bằng chuột (cảm ứng dùng cuộn gốc của trình duyệt)
+                let dragging = false, sx = 0, sy = 0, sl = 0, st = 0;
+                viewport.addEventListener('pointerdown', e => {
+                    if (e.pointerType !== 'mouse' || !el.classList.contains('zoomed')) return;
+                    dragging = true; sx = e.clientX; sy = e.clientY; sl = viewport.scrollLeft; st = viewport.scrollTop;
+                    viewport.setPointerCapture(e.pointerId);
+                    viewport.classList.add('dragging');
+                });
+                viewport.addEventListener('pointermove', e => {
+                    if (!dragging) return;
+                    viewport.scrollLeft = sl - (e.clientX - sx);
+                    viewport.scrollTop = st - (e.clientY - sy);
+                });
+                const stop = () => { dragging = false; viewport.classList.remove('dragging'); };
+                viewport.addEventListener('pointerup', stop);
+                viewport.addEventListener('pointercancel', stop);
+
+                toolbar.append(btnIn, btnOut, btnReset);
+                wrapper.appendChild(toolbar);
+                apply(1);
+            });
+        }
+
+        // Bọc từng <table> trong khung cuộn ngang (bỏ qua bảng của MathJax hoặc bảng đã được bọc)
+        const MEDIA_TABLE_SEL = MEDIA_SCOPE.split(',').map(s => s.trim() + ' table').join(', ');
+        function wrapTables() {
+            document.querySelectorAll(MEDIA_TABLE_SEL).forEach(t => {
+                if (t.closest('mjx-container, .table-scroll, .table-responsive, #tblOverlay')) return;
+                if (!t.parentNode) return;
+                const w = document.createElement('div');
+                w.className = 'table-scroll';
+                t.parentNode.insertBefore(w, t);
+                w.appendChild(t);
+            });
+        }
+
+        // ---- Bảng rộng: gợi ý vuốt ngang, cột đầu cố định, nút xem toàn màn hình ----
+        const __tblRefresh = [];
+        window.addEventListener('resize', () => __tblRefresh.forEach(fn => fn()));
+        function tblState(box, sc) {
+            const over = sc.scrollWidth > sc.clientWidth + 2;
+            box.classList.toggle('has-scroll', over);
+            box.classList.toggle('at-end', !over || sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2);
+        }
+        function enhanceTables() {
+            document.querySelectorAll('.table-responsive, .table-scroll').forEach(sc => {
+                if (sc.dataset.tblDone || sc.closest('#tblOverlay')) return;
+                const table = sc.querySelector('table');
+                if (!table || !sc.parentNode) return;
+                sc.dataset.tblDone = '1';
+                const box = document.createElement('div'); box.className = 'tbl-box';
+                const hint = document.createElement('div'); hint.className = 'tbl-hint';
+                const msg = document.createElement('span'); msg.textContent = '\u2194 Vuốt ngang để xem thêm';
+                const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'tbl-open'; btn.textContent = '\u26F6 Xem toàn màn hình';
+                btn.addEventListener('click', e => { e.stopPropagation(); openTableOverlay(table); });
+                hint.append(msg, btn);
+                const wrap = document.createElement('div'); wrap.className = 'tbl-wrap';
+                const fade = document.createElement('div'); fade.className = 'tbl-fade';
+                sc.parentNode.insertBefore(box, sc);
+                box.append(hint, wrap);
+                wrap.append(sc, fade);
+                const first = table.rows[0];
+                if (first && first.cells.length >= 4 && first.cells[0].colSpan === 1 && first.cells[0].rowSpan === 1) table.classList.add('sticky-first');
+                const upd = () => tblState(box, sc);
+                sc.addEventListener('scroll', upd, { passive: true });
+                if (window.ResizeObserver) new ResizeObserver(upd).observe(table);
+                __tblRefresh.push(upd);
+                upd();
+            });
+        }
+        let tblOv = null, tblScale = 1;
+        function closeTableOverlay() {
+            if (!tblOv) return;
+            tblOv.classList.remove('open');
+            document.documentElement.style.overflow = '';
+        }
+        function openTableOverlay(table) {
+            if (!tblOv) {
+                tblOv = document.createElement('div'); tblOv.id = 'tblOverlay';
+                tblOv.innerHTML = '<div class="tbl-ov-bar"><span class="ttl">Kéo để xem; A+ / A\u2212 đổi cỡ chữ</span>'
+                    + '<button type="button" class="zoom-btn" data-a="-">A\u2212</button><button type="button" class="zoom-btn" data-a="+">A+</button>'
+                    + '<button type="button" class="zoom-btn" data-a="x">\u2715 Đóng</button></div><div class="tbl-ov-body"></div>';
+                document.body.appendChild(tblOv);
+                tblOv.addEventListener('click', e => {
+                    const b = e.target.closest('button[data-a]');
+                    if (!b) return;
+                    if (b.dataset.a === 'x') { closeTableOverlay(); return; }
+                    tblScale = Math.min(2.6, Math.max(0.6, tblScale + (b.dataset.a === '+' ? 0.2 : -0.2)));
+                    tblOv.style.setProperty('--tbl-s', tblScale);
+                });
+                window.addEventListener('keydown', e => {                 // đang xem bảng: không để phím chuyển câu / slide
+                    if (!tblOv.classList.contains('open')) return;
+                    e.stopImmediatePropagation();
+                    if (e.key === 'Escape') closeTableOverlay();
+                }, true);
+            }
+            const body = tblOv.querySelector('.tbl-ov-body');
+            body.innerHTML = '';
+            const c = table.cloneNode(true);
+            c.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+            c.classList.remove('sticky-first');
+            body.appendChild(c);
+            tblScale = 1;
+            tblOv.style.setProperty('--tbl-s', 1);
+            tblOv.classList.add('open');
+            document.documentElement.style.overflow = 'hidden';
+            body.scrollTo(0, 0);
+        }
+
+        function initMedia() { wrapTables(); enhanceTables(); normalizeSvgs(); setupImageZoom(); }
+
+        window.addEventListener('load', () => setTimeout(initMedia, 300));
+
+ 
+        // =====================================================================
+        // LUYỆN TẬP
+        // =====================================================================
+        const KEY = {"P1_1": {"k": "mc", "a": "B"}, "P1_2": {"k": "mc", "a": "B"}, "P1_3": {"k": "mc", "a": "D"}, "P1_4": {"k": "mc", "a": "A"}, "P1_5": {"k": "mc", "a": "C"}, "P1_6": {"k": "mc", "a": "D"}, "P1_7": {"k": "mc", "a": "A"}, "P1_8": {"k": "mc", "a": "C"}, "P1_9": {"k": "mc", "a": "D"}, "P1_10": {"k": "mc", "a": "D"}, "P1_11": {"k": "mc", "a": "C"}, "P1_12": {"k": "mc", "a": "D"}, "P1_13": {"k": "mc", "a": "C"}, "P1_14": {"k": "mc", "a": "C"}, "P1_15": {"k": "mc", "a": "D"}};                 // { id: {k:'mc', a:'B'} | {k:'tf'} | {k:'short', a:'-4'} }
+        const MAX_SCORE = 3.75;
+        const TF_PTS = [0, 0.1, 0.25, 0.5, 1];    // thang điểm đúng/sai theo số ý đúng
+ 
+        const $ = (s, r) => (r || document).querySelector(s);
+        const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+        const fmt = x => (Math.round(x * 100) / 100).toString().replace('.', ',');
+        function hashStr(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+        function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+ 
+        // ---- trạng thái được lưu ----
+        const STORE_KEY = 'practice:v1:' + location.pathname + '|' + hashStr(document.title + JSON.stringify(KEY));
+        if (/[?&]reset=1(&|$)/.test(location.search)) { try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
+        let state = {};
+        try { state = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { state = {}; }
+        state.ans = state.ans || {};              // id -> đáp án đã chọn
+        state.copts = state.copts || {};          // id -> thứ tự phương án (chữ cái gốc)
+        state.set = Object.assign({ sq: false, sc: false, hide: false }, state.set || {});
+        function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+ 
+        // ---- dữ liệu DOM ----
+        const questions = $$('.question');
+        const byId = {};
+        questions.forEach(q => { byId[q.dataset.id] = q; });
+        const ORIG_Q = questions.map(q => q.dataset.id);
+        const ORIG_CH = {};
+        questions.forEach(q => { if (q.dataset.kind === 'mc') ORIG_CH[q.dataset.id] = $$('.opt', q).map(o => o.dataset.k); });
+        const res = {};                           // id -> {status, pts, max}
+        let summaryShown = false;
+ 
+        // =====================================================================
+        // TẢI THEO KHỐI (mỗi đợt BLOCK câu)
+        // =====================================================================
+        const BLOCK = 5;
+        let shownCount = 0;                       // số câu (theo thứ tự đang hiển thị) đã hiện
+        let io = null;
+        let pendingJump = null;                   // câu đang được nhảy tới (giữ vị trí khi các khối phía trên dàn chữ xong)
+        function keepJump() { if (pendingJump) scrollToQuestion(pendingJump, false); }
+ 
+        // Dàn chữ toán + xử lý hình cho một số phần tử; xếp hàng để không chạy chồng nhau
+        function typesetNodes(nodes) {
+            const run = () => {
+                if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+                    MathJax.startup.promise = MathJax.startup.promise
+                        .then(() => MathJax.typesetPromise(nodes))
+                        .then(() => { initMedia(); rearm(); keepJump(); })
+                        .catch(err => console.warn(err));
+                } else setTimeout(run, 150);      // MathJax chưa tải xong
+            };
+            run();
+        }
+        function typesetQuestions(els) {
+            const nodes = [];
+            els.forEach(q => { const a = $('.qtext', q), b = $('.opts', q); if (a) nodes.push(a); if (b) nodes.push(b); });
+            typesetNodes(nodes);
+        }
+        function rearm() {                        // mốc cuối vẫn trong tầm nhìn thì tự tải tiếp
+            const s = $('#moreWrap');
+            if (io && s && !s.hidden) { io.unobserve(s); io.observe(s); }
+        }
+ 
+        function visibleQuestion(q) { return !(state.set.hide && q.classList.contains('done-hide')); }
+        function markDone() { questions.forEach(q => { if (q.classList.contains('s-correct')) q.classList.add('done-hide'); }); }
+        function syncParts() { $$('.part').forEach(p => { p.hidden = !p.querySelector('.question.shown'); }); }
+        function updateMore() {
+            const left = Math.max(questions.length - shownCount, 0);
+            $('#moreWrap').hidden = left <= 0;
+            $('#moreBtn').textContent = 'Tải thêm ' + Math.min(BLOCK, left) + ' câu (còn ' + left + ')';
+        }
+ 
+        // Hiện thêm n câu. exact=true: đếm cả câu đang bị ẩn do "Ẩn câu đã đúng"
+        function revealMore(n, exact) {
+            const all = $$('.question');
+            if (shownCount >= all.length) return;
+            const els = [];
+            let added = 0;
+            while (shownCount < all.length && added < n) {
+                const q = all[shownCount++];
+                q.classList.add('shown');
+                els.push(q);
+                if (exact || visibleQuestion(q)) added++;
+            }
+            state.shown = shownCount;
+            save();
+            syncParts();
+            updateMore();
+            typesetQuestions(els);
+        }
+        function resetShown() { questions.forEach(q => q.classList.remove('shown')); shownCount = 0; }
+        function fillBlock() {                    // luôn có đủ câu chưa ẩn để làm
+            const vis = $$('.question.shown').filter(visibleQuestion).length;
+            if (vis < BLOCK) revealMore(BLOCK - vis);
+        }
+ 
+        // ---- bố cục: thứ tự câu, thứ tự phương án, số câu ----
+        function currentOrder() { return $$('.question').map(q => q.dataset.id); }
+        function applyOrder(order) { order.forEach(id => { const q = byId[id]; if (q) q.parentNode.appendChild(q); }); }
+        function renumber() { $$('.question').forEach((q, i) => { const n = $('.qno', q); if (n) n.textContent = i + 1; }); }
+        function layoutChoices(q, letters) {
+            const box = $('.opts', q);
+            letters.forEach((L, i) => {
+                const o = $('.opt[data-k="' + L + '"]', box);
+                if (o) { box.appendChild(o); $('.lab', o).textContent = 'ABCDEFGH'[i] + '.'; }
+            });
+            state.copts[q.dataset.id] = letters;
+        }
+        function arrangeChoices(q) {
+            const base = ORIG_CH[q.dataset.id].slice();
+            layoutChoices(q, state.set.sc ? shuffle(base) : base);
+        }
+        function applyLayout(fresh) {
+            if (fresh) {
+                applyOrder(ORIG_Q);
+                if (state.set.sq) $$('.qlist').forEach(box => shuffle(Array.from(box.children)).forEach(q => box.appendChild(q)));
+                state.order = currentOrder();
+                state.copts = {};
+                questions.forEach(q => { if (q.dataset.kind === 'mc') arrangeChoices(q); });
+            }
+            renumber();
+            save();
+            if (fresh) { resetShown(); revealMore(BLOCK, true); }
+        }
+ 
+        // ---- thống kê ----
+        function updateStats() {
+            const ids = Object.keys(res);
+            let score = 0, ok = 0;
+            ids.forEach(id => { score += res[id].pts; if (res[id].status === 'correct') ok++; });
+            const total = questions.length;
+            $('#stStats').textContent = 'Đã làm ' + ids.length + '/' + total + ' · Đúng ' + ok + ' · ' + fmt(score) + '/' + fmt(MAX_SCORE) + ' điểm';
+            $('#barFill').style.width = (total ? ids.length / total * 100 : 0) + '%';
+        }
+ 
+        function finish(q, status, pts, max, silent) {
+            const id = q.dataset.id;
+            res[id] = { status: status, pts: pts, max: max };
+            q.classList.remove('s-correct', 's-wrong', 's-partial');
+            q.classList.add('s-' + status);
+            const fb = $('.fb', q);
+            fb.textContent = status === 'correct' ? '✔ Chính xác' : (status === 'partial' ? '½ Đúng một phần' : '✘ Chưa đúng');
+            fb.className = 'fb f-' + status;
+            const sb = $('.sol-btn', q);
+            if (sb) sb.hidden = false;
+            updateStats();
+            if (!silent) maybeShowSummary();
+        }
+ 
+        // ---- trả lời: trắc nghiệm ----
+        function answerMC(q, val, silent) {
+            if (q.dataset.done) return;
+            const id = q.dataset.id, correct = KEY[id].a;
+            q.dataset.done = '1';
+            $$('.opt', q).forEach(o => {
+                o.classList.add('locked');
+                if (o.dataset.k === correct) o.classList.add('correct');
+                else if (o.dataset.k === val) o.classList.add('wrong');
+            });
+            if (!silent) { state.ans[id] = val; save(); }
+            const ok = (val === correct);
+            finish(q, ok ? 'correct' : 'wrong', ok ? 0.25 : 0, 0.25, silent);
+        }
+ 
+        // ---- trả lời: đúng/sai từng ý ----
+        function pickTF(q, row, val, silent) {
+            if (row.dataset.val) return;
+            row.dataset.val = val;
+            const ok = (val === row.dataset.ans);
+            $$('.tfb button', row).forEach(b => {
+                b.disabled = true;
+                if (b.dataset.v === row.dataset.ans) b.classList.add('correct');
+                else if (b.dataset.v === val) b.classList.add('wrong');
+            });
+            row.classList.add(ok ? 'r-ok' : 'r-bad');
+            const rows = $$('.tfrow', q);
+            const map = {};
+            rows.forEach(r => { if (r.dataset.val) map[r.dataset.k] = r.dataset.val; });
+            if (!silent) { state.ans[q.dataset.id] = map; save(); }
+            if (Object.keys(map).length === rows.length) {
+                const c = rows.filter(r => r.dataset.val === r.dataset.ans).length;
+                const pts = rows.length === 4 ? TF_PTS[c] : (c / rows.length);
+                q.dataset.done = '1';
+                finish(q, c === rows.length ? 'correct' : (c === 0 ? 'wrong' : 'partial'), pts, 1, silent);
+            }
+        }
+ 
+        // ---- trả lời: trả lời ngắn ----
+        function norm(s) { return s.replace(/\u2212/g, '-').replace(/,/g, '.').replace(/\s+/g, ''); }
+        function sameAns(a, b) {
+            a = norm(a); b = norm(b);
+            if (a === '' || b === '') return false;
+            if (a === b) return true;
+            const x = Number(a), y = Number(b);
+            return isFinite(x) && isFinite(y) && Math.abs(x - y) < 1e-9;
+        }
+        function checkShort(q, silent, text) {
+            if (q.dataset.done) return;
+            const id = q.dataset.id, inp = $('.sans', q);
+            if (text !== undefined) inp.value = text;
+            if (norm(inp.value) === '') { if (!silent) inp.focus(); return; }
+            q.dataset.done = '1';
+            inp.readOnly = true;
+            $('.chk', q).disabled = true;
+            const ok = sameAns(inp.value, KEY[id].a);
+            inp.classList.add(ok ? 'correct' : 'wrong');
+            const ta = $('.true-ans', q);
+            ta.textContent = 'Đáp án đúng: ' + KEY[id].a;
+            ta.hidden = false;
+            if (!silent) { state.ans[id] = inp.value; save(); }
+            finish(q, ok ? 'correct' : 'wrong', ok ? 0.5 : 0, 0.5, silent);
+        }
+ 
+        // ---- lời giải (chỉ dàn chữ ở lần mở đầu tiên) ----
+        function toggleSol(q, btn) {
+            const s = $('.solution-box', q);
+            if (!s) return;
+            const open = s.style.display === 'block';
+            s.style.display = open ? 'none' : 'block';
+            btn.textContent = open ? 'Xem lời giải' : 'Ẩn lời giải';
+            if (!open) {
+                initMedia();
+                if (!s.dataset.ts) { s.dataset.ts = '1'; typesetNodes([s]); }
+            }
+        }
+ 
+        // ---- làm lại ----
+        function resetQuestion(q) {
+            const id = q.dataset.id;
+            delete q.dataset.done; delete res[id]; delete state.ans[id];
+            q.classList.remove('s-correct', 's-wrong', 's-partial', 'done-hide');
+            $$('.opt', q).forEach(o => o.classList.remove('locked', 'correct', 'wrong'));
+            $$('.tfrow', q).forEach(r => {
+                delete r.dataset.val;
+                r.classList.remove('r-ok', 'r-bad');
+                $$('.tfb button', r).forEach(b => { b.disabled = false; b.classList.remove('correct', 'wrong'); });
+            });
+            const inp = $('.sans', q);
+            if (inp) { inp.value = ''; inp.readOnly = false; inp.classList.remove('correct', 'wrong'); $('.chk', q).disabled = false; }
+            const ta = $('.true-ans', q); if (ta) ta.hidden = true;
+            const fb = $('.fb', q); fb.textContent = ''; fb.className = 'fb';
+            const sb = $('.sol-btn', q); if (sb) { sb.hidden = true; sb.textContent = 'Xem lời giải'; }
+            const s = $('.solution-box', q); if (s) s.style.display = 'none';
+        }
+ 
+        function retryWrong() {
+            questions.forEach(q => {
+                const id = q.dataset.id, r = res[id];
+                if (r && r.status === 'correct') return;
+                if (q.dataset.done || state.ans[id]) {
+                    resetQuestion(q);
+                    if (q.dataset.kind === 'mc') arrangeChoices(q);
+                }
+            });
+            state.set.hide = true;
+            $('#optHide').checked = true;
+            document.body.classList.add('hide-done');
+            markDone();                           // chỉ ẩn các câu đã đúng TẠI THỜI ĐIỂM này
+            summaryShown = false;
+            save(); updateStats(); closeSummary();
+            fillBlock();
+            setTimeout(() => {
+                const f = $$('.question.shown').find(visibleQuestion);
+                if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 120);
+        }
+ 
+        function restart(ask) {
+            if (ask && Object.keys(res).length && !confirm('Xoá toàn bộ kết quả và làm lại từ đầu?')) return;
+            questions.forEach(resetQuestion);
+            state.ans = {};
+            applyLayout(true);
+            $('#note').textContent = '';
+            summaryShown = false;
+            closeSummary(); updateStats();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+ 
+        // ---- bảng kết quả ----
+        function buildSummary() {
+            let score = 0;
+            const byPart = {};
+            questions.forEach(q => {
+                const p = q.dataset.part;
+                const b = byPart[p] = byPart[p] || { n: 0, ok: 0, part: 0, done: 0 };
+                b.n++;
+                const r = res[q.dataset.id];
+                if (r) { b.done++; score += r.pts; if (r.status === 'correct') b.ok++; else if (r.status === 'partial') b.part++; }
+            });
+            const pct = MAX_SCORE > 0 ? score / MAX_SCORE * 100 : 0;
+            const names = { 1: 'Phần 1 · Trắc nghiệm', 2: 'Phần 2 · Đúng/Sai', 3: 'Phần 3 · Trả lời ngắn' };
+            let html = '<div class="bigscore">' + fmt(score) + ' / ' + fmt(MAX_SCORE) + '</div><div class="pct">' + Math.round(pct) + '%</div><ul class="plist">';
+            Object.keys(byPart).sort().forEach(p => {
+                const b = byPart[p];
+                html += '<li><span>' + names[p] + '</span><b>' + b.ok + '/' + b.n + ' đúng' +
+                        (b.part ? ' · ' + b.part + ' một phần' : '') + (b.done < b.n ? ' · ' + (b.n - b.done) + ' chưa làm' : '') + '</b></li>';
+            });
+            html += '</ul>';
+            $('#sumBody').innerHTML = html;
+            $('#sumMsg').textContent = pct >= 80 ? 'Rất tốt!' : (pct >= 50 ? 'Khá ổn, hãy ôn lại các câu chưa đúng.' : 'Hãy xem lại lời giải và thử lại.');
+            const notOk = questions.filter(q => { const r = res[q.dataset.id]; return !r || r.status !== 'correct'; }).length;
+            $('#sumRetry').hidden = (notOk === 0);
+        }
+        function openSummary() { buildSummary(); $('#summary').classList.add('open'); }
+        function closeSummary() { $('#summary').classList.remove('open'); }
+        function maybeShowSummary() {
+            if (!summaryShown && Object.keys(res).length === questions.length) { summaryShown = true; openSummary(); }
+        }
+ 
+        // ---- sự kiện ----
+        document.addEventListener('click', e => {
+            if (e.target.closest('.zoom-toolbar')) return;           // nút phóng to/thu nhỏ ảnh không tính là chọn đáp án
+            const opt = e.target.closest('.opt');
+            if (opt) { answerMC(opt.closest('.question'), opt.dataset.k); return; }
+            const tb = e.target.closest('.tfb button');
+            if (tb) { const row = tb.closest('.tfrow'); pickTF(row.closest('.question'), row, tb.dataset.v); return; }
+            const cb = e.target.closest('.chk');
+            if (cb) { checkShort(cb.closest('.question')); return; }
+            const sb = e.target.closest('.sol-btn');
+            if (sb) { toggleSol(sb.closest('.question'), sb); }
+        });
+        document.addEventListener('keydown', e => {
+            const t = e.target;
+            if (e.key === 'Enter' && t.classList && t.classList.contains('sans')) { e.preventDefault(); checkShort(t.closest('.question')); }
+            else if ((e.key === 'Enter' || e.key === ' ') && t.classList && t.classList.contains('opt')) { e.preventDefault(); answerMC(t.closest('.question'), t.dataset.k); }
+            else if (e.key === 'Escape') { closeSummary(); closeToc(); }
+        });
+        $('#btnResult').onclick = openSummary;
+        $('#btnRetry').onclick = retryWrong;
+        $('#btnRestart').onclick = () => restart(true);
+        $('#sumRetry').onclick = retryWrong;
+        $('#sumRestart').onclick = () => restart(false);
+        $('#sumClose').onclick = closeSummary;
+        $('#summary').addEventListener('click', e => { if (e.target.id === 'summary') closeSummary(); });
+        $('#moreBtn').onclick = () => revealMore(BLOCK);
+ 
+        function onLayoutSetting() {
+            save();
+            if (Object.keys(state.ans).length === 0) { applyLayout(true); $('#note').textContent = ''; }
+            else $('#note').textContent = 'Tuỳ chọn trộn sẽ áp dụng khi bấm “Làm lại từ đầu”.';
+        }
+        $('#optSQ').checked = state.set.sq;
+        $('#optSC').checked = state.set.sc;
+        $('#optHide').checked = state.set.hide;
+        $('#optSQ').onchange = e => { state.set.sq = e.target.checked; onLayoutSetting(); };
+        $('#optSC').onchange = e => { state.set.sc = e.target.checked; onLayoutSetting(); };
+        $('#optHide').onchange = e => {
+            state.set.hide = e.target.checked;
+            document.body.classList.toggle('hide-done', state.set.hide);
+            if (state.set.hide) markDone(); else questions.forEach(q => q.classList.remove('done-hide'));
+            save(); fillBlock();
+        };
+        document.body.classList.toggle('hide-done', state.set.hide);
+ 
+        // =====================================================================
+        // THANH ĐIỀU HƯỚNG: lên đầu, nhảy đến câu, mục lục
+        // =====================================================================
+        function scrollToQuestion(q, smooth) { q.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
+ 
+        function jumpTo(n) {
+            const all = $$('.question');
+            if (!all.length) return;
+            n = Math.min(Math.max(parseInt(n, 10) || 1, 1), all.length);
+            const q = all[n - 1];
+            if (n > shownCount) revealMore(n - shownCount, true);                    // câu chưa được tải -> tải tới câu đó
+            if (q.classList.contains('done-hide')) q.classList.remove('done-hide');  // câu đang bị ẩn do "Ẩn câu đã đúng" -> cho hiện
+            pendingJump = q;
+            setTimeout(() => { if (pendingJump === q) pendingJump = null; }, 5000);
+            scrollToQuestion(q, false);
+            q.classList.remove('flash'); void q.offsetWidth; q.classList.add('flash');
+            setTimeout(() => q.classList.remove('flash'), 1800);
+            $('#navNum').value = n;
+        }
+        // người dùng tự cuộn thì thôi giữ vị trí
+        ['wheel', 'touchstart', 'mousedown'].forEach(ev => window.addEventListener(ev, () => { pendingJump = null; }, { passive: true }));
+        window.addEventListener('keydown', e => { if (e.key !== 'Enter') pendingJump = null; });
+ 
+        function openToc() {
+            const grid = $('#tocGrid');
+            grid.textContent = '';
+            $$('.question').forEach((q, i) => {
+                const r = res[q.dataset.id];
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'tocitem ' + (r ? 't-' + r.status : 't-none');
+                b.textContent = i + 1;
+                b.title = 'Câu ' + (i + 1) + (r ? (r.status === 'correct' ? ' · đúng' : (r.status === 'partial' ? ' · một phần' : ' · sai')) : ' · chưa làm');
+                b.onclick = () => { closeToc(); jumpTo(i + 1); };
+                grid.appendChild(b);
+            });
+            $('#tocModal').classList.add('open');
+        }
+        function closeToc() { $('#tocModal').classList.remove('open'); }
+ 
+        $('#navTotal').textContent = '/ ' + questions.length;
+        $('#navNum').max = questions.length;
+        $('#navTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        $('#navGo').onclick = () => { const v = $('#navNum').value; if (v !== '') jumpTo(v); else $('#navNum').focus(); };
+        $('#navNum').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#navGo').click(); } });
+        $('#navToc').onclick = openToc;
+        $('#tocClose').onclick = closeToc;
+        $('#tocModal').addEventListener('click', e => { if (e.target.id === 'tocModal') closeToc(); });
+ 
+        // tự tải khối tiếp theo khi cuộn gần cuối
+        if ('IntersectionObserver' in window) {
+            io = new IntersectionObserver(entries => {
+                if (entries.some(e => e.isIntersecting)) revealMore(BLOCK);
+            }, { rootMargin: '300px 0px' });
+            io.observe($('#moreWrap'));
+        }
+ 
+        // ---- khởi tạo: khôi phục thứ tự, đáp án đã lưu, rồi hiện khối đầu ----
+        if (state.order && state.order.length === questions.length) applyOrder(state.order);
+        questions.forEach(q => {
+            if (q.dataset.kind !== 'mc') return;
+            const l = state.copts[q.dataset.id];
+            if (l && l.length === ORIG_CH[q.dataset.id].length) layoutChoices(q, l); else arrangeChoices(q);
+        });
+        state.order = currentOrder();
+        renumber();
+        Object.keys(state.ans).forEach(id => {
+            const q = byId[id];
+            if (!q) return;
+            const a = state.ans[id], kind = q.dataset.kind;
+            if (kind === 'mc') answerMC(q, a, true);
+            else if (kind === 'tf') Object.keys(a).forEach(k => { const row = $('.tfrow[data-k="' + k + '"]', q); if (row) pickTF(q, row, a[k], true); });
+            else if (kind === 'short') checkShort(q, true, a);
+        });
+        summaryShown = (questions.length > 0 && Object.keys(res).length === questions.length);   // mở lại trang không bật lại hộp kết quả
+        if (state.set.hide) markDone();
+        (function () {
+            // số câu cần hiện ngay: ít nhất 1 khối, đủ bao gồm câu đã làm và số câu đã hiện lần trước
+            const all = $$('.question');
+            let need = Math.max(BLOCK, state.shown || 0);
+            all.forEach((q, i) => { if (state.ans[q.dataset.id]) need = Math.max(need, i + 1); });
+            need = Math.min(all.length, Math.ceil(need / BLOCK) * BLOCK);
+            revealMore(need, true);
+        })();
+        updateStats();
+        save();
+    </script>
+<script>
+(function () {
+    var timer = 0, TAG = { '1': 'TN', '2': 'ĐS', '3': 'TLN', '4': 'TL' };
+    function setText(el, v) { if (el && el.textContent !== v) el.textContent = v; }
+    function renumber() {
+        var secs = document.querySelectorAll('section.part[data-off]');
+        var all = document.querySelectorAll('.question');
+        var shown = {}, tag = {}, per = false;
+        Array.prototype.forEach.call(secs, function (sec) {
+            var off = parseInt(sec.getAttribute('data-off'), 10) || 0;
+            if (sec.getAttribute('data-cont') === '0') per = true;
+            var qs = sec.querySelectorAll('.question');
+            Array.prototype.forEach.call(qs, function (q, i) {
+                var want = String(off + i + 1);
+                setText(q.querySelector('.qno'), want);
+                shown[q.getAttribute('data-id')] = want;
+                tag[q.getAttribute('data-id')] = TAG[sec.getAttribute('data-part')] || '';
+            });
+        });
+        // lưới mục lục (được dựng lại mỗi lần mở): nhãn theo số đã hiển thị
+        var btns = document.querySelectorAll('#tocGrid .tocitem');
+        Array.prototype.forEach.call(btns, function (b, i) {
+            var q = all[i]; if (!q) return;
+            var id = q.getAttribute('data-id'), n = shown[id]; if (!n) return;
+            setText(b, per ? tag[id] + n : n);
+            var t = b.getAttribute('title') || '';
+            var nt = t.replace(/^Câu \d+( \([^)]*\))?/, 'Câu ' + n + (per ? ' (' + tag[id] + ')' : ''));
+            if (nt !== t) b.setAttribute('title', nt);
+        });
+        var lb = document.querySelector('label[for="navNum"]');
+        if (lb && per) { setText(lb, 'Thứ tự'); lb.title = 'Nhảy tới câu thứ n trong toàn bộ đề'; }
+    }
+    function later() { clearTimeout(timer); timer = setTimeout(renumber, 30); }
+    new MutationObserver(later).observe(document.body, { childList: true, subtree: true, characterData: true });
+    document.addEventListener('click', later, true);
+    window.addEventListener('load', later);
+    [100, 500, 1500, 3000].forEach(function (ms) { setTimeout(renumber, ms); });
+    renumber();
+})();
+</script>
+</body>
+</html>
